@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DIGIPIXEL Quotation Generator</title>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+  <style>
+    body, h1, h2, h3 {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .layout-container {
+      display: flex;
+      min-height: 100vh;
+      background-color: #f3f4f6;
+    }
+
+    .sidebar {
+      width: 300px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+      border: none;
+      border-right: 0.5px solid #acacac;
+    }
+
+    .sidebar-header {
+      height: 130px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      padding: 24px;
+      color: white;
+      text-align: center;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .sidebar-header img {
+      width: 50%;
+    }
+
+    .nav-links {
+      padding: 24px 16px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 8px;
+      transition: 0.3s;
+      gap: 24px;
+      margin-bottom: 12px;
+    }
+
+    .nav-item:hover {
+      background-color: #004c84;
+      color: #fff;
+    }
+
+    .nav-item.active {
+      background-color: #004c84;
+      color: #fff;
+    }
+
+    .nav-footer {
+      padding: 24px;
+      font-size: 0.65rem;
+      color: #777;
+      border-top: 1px solid #ddd;
+      text-align: center;
+    }
+
+    .topbar {
+        height: 130px;
+        background-color: #004c84;
+        border:none;
+        display: flex;
+        justify-content: center;   
+        align-items: center;      
+        font-weight: bold;
+        font-size: 25px;
+        text-align: center;    
+        color:white;
+        border-bottom-left-radius: 25px;
+        border-bottom-right-radius: 25px;
+      }
+
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-content {
+      padding: 30px;
+      display: flex;
+      gap: 24px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .features-panel, .selected-panel {
+      background: #fff;
+      padding: 24px;
+      border-radius: 24px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .total-title{
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 16px;
+    }
+
+    .features-list {
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    .category-title {
+      font-weight: 600;
+      margin: 16px 0 8px;
+    }
+
+    .feature-box {
+      display: flex;
+      justify-content: space-between; 
+      align-items: center;
+      background: #f3f3f3;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin-top: 12px;
+      cursor: grab;
+    }
+
+    .drop-zone {
+      background: #fafafa;
+      padding: 16px;
+      border: 2px dashed #bbb;
+      border-radius: 6px;
+      min-height: 400px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .selected-item {
+      background: #d1fae5;
+      padding: 12px;
+      border: 1px solid #94d3a2;
+      border-radius: 6px;
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .remove-btn {
+      color: #d32f2f;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .generate-btn {
+      margin-top: 24px;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: bold;
+      background: #3f51b5;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .generate-btn:hover {
+      background: white;
+      color: #3f51b5;
+      border: 1px solid #3f51b5;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 12px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: block;
+    }
+  </style>
+</head>
+
+    <div class="layout-container">
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <div>
+          <div class="sidebar-header">
+            <!-- <img src="images/Digipixel-Logo.png"> -->
+             <img src="images/DPX.png">
+          </div>
+          <ul class="nav-links">
+            <li><a class="nav-item" href="Dashboard.html"><span class="material-icons">dashboard</span>Dashboard</a></li>
+            <li><a class="nav-item active" href="QuoteGenerator.html"><span class="material-icons">description</span>Quotes</a></li>
+            <li><a class="nav-item" href="Client.html"><span class="material-icons">groups</span>Clients</a></li>
+            <li><a class="nav-item" href="Settings.html"><span class="material-icons">settings</span>Settings</a></li>
+          </ul>
+        </div>
+        <div class="nav-footer">© 2025 DIGIPIXEL, All Right Reserved</div>
+      </nav>
+
+      <!-- Content -->
+      <div class="content-wrapper">
+        <div class="topbar">DIGIPIXEL Quotation Generator</div>
+
+        <div class="main-content">
+          <!-- Left Feature List -->
+          <div class="features-panel w-3/5">
+            <!--Title-->
+            <h2 class="section-title flex items-center justify-between">
+              Available Features
+              <span id="editFeaturesBtn" 
+                class="material-icons text-gray-500 cursor-pointer hover:text-gray-700"
+                title="Edit"
+              >
+                edit
+              </span>
+            </h2>
+
+            <div id="featureContainer" class="features-list">
+              <!--Web Design Process-->
+              <div class="category-title">Web Design Process</div>
+              <div class="feature-box draggable" draggable="true" data-name="Bespoke Web Design" data-price="1200">
+                <span class="feature-name">Bespoke Web Design</span>
+                <span class="feature-price">$1200.00</span>
+              </div>
+              <div class="feature-box draggable" draggable="true" data-name="Streamlined Web Design" data-price="800">
+                <span class="feature-name">Streamlined Web Design</span>
+                <span class="feature-price">$800.00</span>
+              </div>
+
+              <!--Main Requirement-->
+              <div class="category-title">Main Requirement</div>
+              <div class="feature-box draggable" draggable="true" data-name="Corporate Website (Wordpress With Elementor Pro)" data-price="2500">
+                <span class="feature-name">Corporate Website (Wordpress With Elementor Pro)</span>
+                <span class="feature-price">$2500.00</span>
+              </div>
+              <div class="feature-box draggable" draggable="true" data-name="eCommerce Website (Woocommerce With Elementor Pro)" data-price="4500">
+                <span class="feature-name">eCommcerce Website (Woocommerce With Elementor Pro)</span>
+                <span class="feature-price">$4500.00</span>
+              </div>
+              <div class="feature-box draggable" draggable="true" data-name="eCommcerce Website" data-price="3250">
+                <span class="feature-name">eCommerce Website (Shopify)</span>
+                <span class="feature-price">$3250.00</span>
+              </div>
+
+              <!--Domain-->
+              <div class="category-title">Domain</div>
+              <div class="feature-box draggable" draggable="true" data-name=".com" data-price="250">
+                <span class="feature-name">.com</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+              <div class="feature-box draggable" draggable="true" data-name=".com.sg/ .sg" data-price="450">
+                <span class="feature-name">.com.sg/.sg</span>
+                <span class="feature-price">$475.00</span>
+              </div>
+              <div class="feature-box draggable" draggable="true" data-name="I already have my own domain, just need to migrate" data-price="150">
+                <span class="feature-name">I already have my own domain, just need to migrate</span>
+                <span class="feature-price">$170.00</span>
+              </div>
+
+              <!--Web Sever / Hosting -->
+              <div class="category-title">Web Server / Hosting </div>
+              <div class="feature-box draggable" draggable="true" data-name="Shared Web Hosting" data-price="250">
+                <span class="feature-name">Shared Web Hosting</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+              <div class="feature-box draggable" draggable="true" data-name="Dedicated High Speed Web Hosting" data-price="450">
+                <span class="feature-name">Dedicated High Speed Web Hosting</span>
+                <span class="feature-price">$475.00</span>
+              </div>
+              <div class="feature-box draggable" draggable="true" data-name="I already have my own hosting, just need to migrate" data-price="150">
+                <span class="feature-name">I already have my own hosting, just need to migrate</span>
+                <span class="feature-price">$170.00</span>
+              </div>
+
+
+              <!--SEO-Friendly-->
+              <div class="category-title">SEO-Friendly</div>
+              <div class="feature-box draggable" draggable="true" data-name="SEO-Friendly" data-price="250">
+                <span class="feature-name">SEO-Friendly</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+
+              <!--Web Optimised Development-->
+              <div class="category-title">Web Optimised Development</div>
+              <div class="feature-box draggable" draggable="true" data-name="Web Optimised Development" data-price="250">
+                <span class="feature-name">Web Optimised Development</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <!--Change Content & Images Frequently-->
+              <div class="category-title">Change Content & Images Frequently</div>
+              <div class="feature-box draggable" draggable="true" data-name="Change Content & Images Frequently" data-price="250">
+                <span class="feature-name">Change Content & Images Frequently</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+
+              <!--Additional Features-->
+              <div class="category-title">Additional Features</div>
+              <div class="feature-box draggable" draggable="true" data-name="Articles/Blog/Newsroom Features" data-price="250">
+                <span class="feature-name">Articles/Blog/Newsroom Features</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Projects/Portfolio Management System" data-price="250">
+                <span class="feature-name">Projects/Portfolio Management System</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Image/ Video Gallery" data-price="250">
+                <span class="feature-name">Image/ Video Gallery</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="On-Site Search Feature" data-price="250">
+                <span class="feature-name">On-Site Search Feature</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Customised Menu Bar Design" data-price="250">
+                <span class="feature-name">Customised Menu Bar Design</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Multi-Language Site" data-price="250">
+                <span class="feature-name">Multi-Language Site</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Google Analytics Integration" data-price="250">
+                <span class="feature-name">Google Analytics Integration</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Newsletter Integration" data-price="250">
+                <span class="feature-name">Newsletter Integration</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="WhatsApp Floating Button Integration" data-price="250">
+                <span class="feature-name">WhatsApp Floating Button Integration</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Chatbot" data-price="250">
+                <span class="feature-name">Chatbot</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Call-to-Action (CTA) Ads/ Pop up Window" data-price="250">
+                <span class="feature-name">Call-to-Action (CTA) Ads/ Pop up Window</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Additional Customised Contact Forms" data-price="250">
+                <span class="feature-name">Additional Customised Contact Forms</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+
+
+              <!--Other Features-->
+              <div class="category-title">Other Features</div>
+              <div class="feature-box draggable" draggable="true" data-name="Customised Integration With External Software" data-price="250">
+                <span class="feature-name">Customised Integration With External Software</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Expedited Timeline (Case-By-Case Basis)" data-price="250">
+                <span class="feature-name">Expedited Timeline (Case-By-Case Basis)</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Logo Design with style guide" data-price="250">
+                <span class="feature-name">Logo Design with style guide</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Social Media Management (8 Posts per Month)" data-price="250">
+                <span class="feature-name">Social Media Management (8 Posts per Month)</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Web Illustrations" data-price="250">
+                <span class="feature-name">Web Illustrations</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              <div class="feature-box draggable" draggable="true" data-name="Custom Gif Animations" data-price="250">
+                <span class="feature-name">Custom Gif Animations</span>
+                <span class="feature-price">$275.00</span>
+              </div>
+
+              
+            </div>
+          </div>
+
+          <!-- Right Drop Zone -->
+          <div class="selected-panel w-2/5">
+            <label>Client / Company Name</label>
+            <input type="text" id="clientName" placeholder="Enter client name">
+            <label>Quotation No:</label>
+            <input type="number" id="QuotationNo" placeholder="0001">
+
+            <h2 class="section-title">
+              Selected Features</h2>
+            <div id="dropZone" class="drop-zone"></div>
+            <div class="total-title">Total: $<span id="totalPrice">0</span></div>
+            <button id="generatePDF" class="generate-btn">Generate PDF Quote</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  <!-- Feature Edit Modal -->
+  <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg shadow-lg w-[400px] p-6 space-y-4">
+      <h3 class="text-lg font-semibold mb-2">Update Feature</h3>
+
+      <label for="categorySelect" class="block font-medium">Category *</label>
+      <select id="categorySelect" class="w-full border border-gray-300 rounded px-3 py-2">
+        <option value="">--Select Category--</option>
+      </select>
+
+      <label for="featureSelect" class="block font-medium">Feature *</label>
+      <select id="featureSelect" class="w-full border border-gray-300 rounded px-3 py-2" disabled>
+        <option value="">-- Select Feature --</option>
+      </select>
+
+      <label for="editFeatureName" class="block font-medium">Feature Name *</label>
+      <input type="text" id="editFeatureName" class="w-full border border-gray-300 rounded px-3 py-2" />
+
+      <label for="editFeaturePrice" class="block font-medium">Feature Price *</label>
+      <input type="number" id="editFeaturePrice" class="w-full border border-gray-300 rounded px-3 py-2" />
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button id="closeModal" class="text-gray-600 hover:text-black">Cancel</button>
+        <button id="saveFeatureBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!--Edit here if you wish to change the popup message when you save the changes-->
+  <div id="saveMessage" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg hidden z-50">
+    Changes Saved!
+  </div>
+
+
+
+  <script>
+  let total = 0;
+  const dropZone = document.getElementById("dropZone");
+  const totalDisplay = document.getElementById("totalPrice");
+  const featureContainer = document.getElementById("featureContainer");
+  const addedFeatures = new Set();
+  const featureIndexMap = new Map();
+
+  // Restore data from localStorage
+  window.addEventListener("DOMContentLoaded", () => {
+    const savedFeatures = JSON.parse(localStorage.getItem("featuresData"));
+    if (savedFeatures) {
+      document.querySelectorAll(".feature-box").forEach(box => {
+        const name = box.dataset.name;
+        const updated = savedFeatures.find(f => f.originalName === name);
+        if (updated) {
+          box.dataset.name = updated.name;
+          box.dataset.price = updated.price;
+          box.querySelector(".feature-name").textContent = updated.name;
+          box.querySelector(".feature-price").textContent = `$${updated.price.toFixed(2)}`;
+        }
+      });
+    }
+    setupDrag();
+  });
+
+  function setupDrag() {
+    document.querySelectorAll(".draggable").forEach(item => {
+      item.addEventListener("dragstart", (e) => {
+        const index = Array.from(featureContainer.children).indexOf(item);
+        e.dataTransfer.setData("text/plain", JSON.stringify({
+          name: item.dataset.name,
+          price: parseFloat(item.dataset.price),
+          index: index
+        }));
+      });
+    });
+  }
+
+  dropZone.addEventListener("dragover", (e) => e.preventDefault());
+
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+    const { name, price, index } = data;
+
+    if (addedFeatures.has(name)) {
+      alert(`"${name}" is already added.`);
+      return;
+    }
+
+    const source = featureContainer.querySelector(`[data-name="${name}"]`);
+    if (source) source.remove();
+    featureIndexMap.set(name, index);
+
+    const item = document.createElement("div");
+    item.className = "selected-item";
+    item.dataset.name = name;
+    item.dataset.price = price;
+    item.innerHTML = `<span>${name} – $${price.toFixed(2)}</span>`;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "remove-btn";
+    removeBtn.textContent = "✖";
+    removeBtn.onclick = () => {
+      item.remove();
+      total -= price;
+      totalDisplay.textContent = total.toFixed(2);
+      addedFeatures.delete(name);
+
+      const restore = document.createElement("div");
+      restore.className = "feature-box draggable";
+      restore.setAttribute("draggable", "true");
+      restore.setAttribute("data-name", name);
+      restore.setAttribute("data-price", price);
+      restore.innerHTML = `
+        <span class="feature-name">${name}</span>
+        <span class="feature-price">$${price.toFixed(2)}</span>
+      `;
+
+      const restoreIndex = featureIndexMap.get(name);
+      const allFeatures = Array.from(featureContainer.children);
+
+      if (restoreIndex !== undefined && restoreIndex >= 0 && restoreIndex < allFeatures.length) {
+        featureContainer.insertBefore(restore, allFeatures[restoreIndex]);
+      } else {
+        featureContainer.appendChild(restore);
+      }
+
+      featureIndexMap.delete(name);
+      setupDrag();
+    };
+
+    item.appendChild(removeBtn);
+    dropZone.appendChild(item);
+
+    total += price;
+    totalDisplay.textContent = total.toFixed(2);
+    addedFeatures.add(name);
+  });
+
+  document.getElementById("generatePDF").addEventListener("click", () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const clientName = document.getElementById("clientName").value || "Unnamed Client";
+    const quoteNo = document.getElementById("QuotationNo").value || "0000";
+    const currentDate = new Date().toLocaleDateString();
+
+    const logo = new Image();
+    logo.src = "images/Digipixel-Logo.png"; 
+
+    logo.onload = function () {
+      const logoWidth = 40; // Desired width in PDF units
+      const aspectRatio = logo.height / logo.width;
+      const logoHeight = logoWidth * aspectRatio;
+
+      // Add logo preserving aspect ratio
+      doc.addImage(logo, 'PNG', 14, 10, logoWidth, logoHeight);
+
+      let y = 10 + logoHeight + 5; // Position content below the logo
+
+      // doc.setFontSize(16);
+      // doc.text("DIGIPIXEL Quotation", 14, y);
+      // y += 20;
+
+      doc.setFontSize(12);
+      doc.text(`Client / Company Name: ${clientName}`, 14, y);
+      y += 6;
+      doc.text(`Quotation No: ${quoteNo}`, 14, y);
+      y += 6;
+      doc.text(`Date: ${currentDate}`, 14, y);
+      y += 10;
+
+      doc.setFontSize(13);
+      doc.text("Selected Features:", 14, y);
+      y += 8;
+
+      dropZone.querySelectorAll(".selected-item").forEach(item => {
+        const name = item.dataset.name;
+        const price = item.dataset.price;
+        doc.text(`- ${name} – $${parseFloat(price).toFixed(2)}`, 20, y);
+        y += 7;
+      });
+
+      doc.text(`Total: $${total.toFixed(2)}`, 14, y + 10);
+      doc.save(`Quote_${clientName.replace(/\s+/g, "_")}.pdf`);
+    };
+
+
+    logo.onerror = function () {
+      alert("Failed to load logo. Make sure 'images/image.png' exists and is accessible.");
+    };
+  });
+
+
+  // Modal Logic
+  const modal = document.getElementById("editModal");
+  const categorySelect = document.getElementById("categorySelect");
+  const featureSelect = document.getElementById("featureSelect");
+  const featureNameInput = document.getElementById("editFeatureName");
+  const featurePriceInput = document.getElementById("editFeaturePrice");
+  const saveFeatureBtn = document.getElementById("saveFeatureBtn");
+
+  document.querySelector(".material-icons[title='Edit']").addEventListener("click", () => {
+    populateCategories();
+    modal.classList.remove("hidden");
+  });
+
+  document.getElementById("closeModal").addEventListener("click", () => {
+    modal.classList.add("hidden");
+    resetForm();
+  });
+
+  function resetForm() {
+    categorySelect.innerHTML = '<option value="">-- Select Category --</option>';
+    featureSelect.innerHTML = '<option value="">-- Select Feature --</option>';
+    featureSelect.disabled = true;
+    featureNameInput.value = "";
+    featurePriceInput.value = "";
+  }
+
+  function populateCategories() {
+    const categories = Array.from(document.querySelectorAll("#featureContainer .category-title")).map(el => el.textContent.trim());
+    categorySelect.innerHTML = '<option value="">-- Select Category --</option>';
+    categories.forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent = cat;
+      categorySelect.appendChild(option);
+    });
+  }
+
+  categorySelect.addEventListener("change", () => {
+    const selectedCategory = categorySelect.value;
+    featureSelect.innerHTML = '<option value="">-- Select Feature --</option>';
+    if (!selectedCategory) {
+      featureSelect.disabled = true;
+      return;
+    }
+
+    const categoryTitles = Array.from(document.querySelectorAll("#featureContainer .category-title"));
+    let categoryElement = categoryTitles.find(el => el.textContent.trim() === selectedCategory);
+    let featureBoxElements = [];
+
+    if (categoryElement) {
+      let next = categoryElement.nextElementSibling;
+      while (next && !next.classList.contains("category-title")) {
+        if (next.classList.contains("feature-box")) {
+          featureBoxElements.push(next);
+        }
+        next = next.nextElementSibling;
+      }
+
+      featureBoxElements.forEach(box => {
+        const name = box.dataset.name;
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        featureSelect.appendChild(option);
+      });
+
+      featureSelect.disabled = false;
+    }
+  });
+
+  featureSelect.addEventListener("change", () => {
+    const selectedName = featureSelect.value;
+    const feature = document.querySelector(`#featureContainer .feature-box[data-name="${selectedName}"]`);
+    if (feature) {
+      featureNameInput.value = feature.dataset.name;
+      featurePriceInput.value = feature.dataset.price;
+    }
+  });
+
+  saveFeatureBtn.addEventListener("click", () => {
+    const oldName = featureSelect.value;
+    const newName = featureNameInput.value.trim();
+    const newPrice = parseFloat(featurePriceInput.value);
+
+    if (!oldName || !newName || isNaN(newPrice)) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    const feature = document.querySelector(`#featureContainer .feature-box[data-name="${oldName}"]`);
+    if (feature) {
+      feature.dataset.name = newName;
+      feature.dataset.price = newPrice;
+      feature.querySelector(".feature-name").textContent = newName;
+      feature.querySelector(".feature-price").textContent = `$${newPrice.toFixed(2)}`;
+    }
+
+    // Save to localStorage
+    const allFeatureBoxes = Array.from(document.querySelectorAll("#featureContainer .feature-box"));
+    const featureData = allFeatureBoxes.map(box => ({
+      originalName: box.dataset.name,
+      name: box.dataset.name,
+      price: parseFloat(box.dataset.price)
+    }));
+    localStorage.setItem("featuresData", JSON.stringify(featureData));
+
+    alert("Changes Saved!");
+    modal.classList.add("hidden");
+    resetForm();
+  });
+</script>
+
+
+
+</body>
+</html>
